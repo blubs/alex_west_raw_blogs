@@ -10,6 +10,10 @@ blog_page = requests.get('https://www.alexwest.co/blogs')
 blog_soup = BeautifulSoup(blog_page.content, 'html.parser')
 blog_post_links = blog_soup.find_all('a', href=re.compile(r'^/posts/\d+$'))
 
+build_dir = Path('build')
+build_dir.mkdir(parents=True, exist_ok=True)
+
+
 
 def get_blog_post(blog_post_url):
     blog_post_page = requests.get(f'https://www.alexwest.co{blog_post_url}')
@@ -25,7 +29,7 @@ def get_blog_post(blog_post_url):
 
 
 
-blog_posts_cache_file = Path('blog_posts.json')
+blog_posts_cache_file = build_dir / 'blog_posts.json'
 
 if not blog_posts_cache_file.exists():
     blog_posts = [get_blog_post(blog_post_link['href']) for blog_post_link in tqdm(blog_post_links)]
@@ -53,7 +57,8 @@ for blog_post in blog_posts:
     _ = blogs_book.append(blog_post_text_div)
 
 
-html_output_file = Path('blogs_book.html')
+
+html_output_file = build_dir / 'alex_west_raw_blogs.html'
 with html_output_file.open('w', encoding='utf-8') as f:
     f.write(str(blogs_book))
 # -------------------------------------------------------------------------
@@ -65,8 +70,8 @@ with html_output_file.open('w', encoding='utf-8') as f:
 from datetime import datetime
 timestamp_str = datetime.now().strftime('%Y%m%d')
 
-epub_output_file = Path('alex_west_raw_blogs.epub')
 import pypandoc
+epub_output_file = build_dir / 'alex_west_raw_blogs.epub'
 output = pypandoc.convert_file(
     html_output_file, 
     'epub', 
@@ -76,5 +81,21 @@ output = pypandoc.convert_file(
     ],
     outputfile=epub_output_file,
 )
+# -------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------
+# Convert epub to pdf
+# -------------------------------------------------------------------------
+pdf_output_file = build_dir / 'alex_west_raw_blogs.pdf'
+pypandoc.convert_file(
+    epub_output_file, 
+    'pdf', 
+    outputfile=pdf_output_file,
+    extra_args=['--pdf-engine=weasyprint'],
+)
+
+
+breakpoint()
 # -------------------------------------------------------------------------
 
