@@ -1,0 +1,6 @@
+requests
+beautifulsoup4
+tqdm
+pypandoc_binary # Includes pandoc
+# pypandoc
+# pandoc
