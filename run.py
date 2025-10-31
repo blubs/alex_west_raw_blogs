@@ -17,7 +17,6 @@ cache_dir = Path('cache')
 cache_dir.mkdir(parents=True, exist_ok=True)
 
 
-
 def get_blog_post(blog_post_url):
     blog_post_page = requests.get(f'https://www.alexwest.co{blog_post_url}')
     blog_post_soup = BeautifulSoup(blog_post_page.content, 'html.parser')
@@ -28,22 +27,27 @@ def get_blog_post(blog_post_url):
         'text': blog_post_text,
     }
     return blog_post
-    
 
 
+# Only get first 10
+blog_post_links = blog_post_links[:10]
 
-blog_posts_cache_file = cache_dir / 'blog_posts.json'
-
-if not blog_posts_cache_file.exists():
-    blog_posts = [get_blog_post(blog_post_link['href']) for blog_post_link in tqdm(blog_post_links)]
-    # They're sorted from newest to oldest
-    # Reorder to be oldest to newest
-    blog_posts = reversed(blog_posts)
-    with blog_posts_cache_file.open('w') as f:
-        json.dump(list(blog_posts), f)
-else:
-    with blog_posts_cache_file.open('r') as f:
-        blog_posts = json.load(f)
+blog_posts = [get_blog_post(blog_post_link['href']) for blog_post_link in tqdm(blog_post_links)]
+# They're sorted from newest to oldest
+# Reorder to be oldest to newest
+blog_posts = reversed(blog_posts)
+# -----
+# blog_posts_cache_file = cache_dir / 'blog_posts.json'
+# if not blog_posts_cache_file.exists():
+#     blog_posts = [get_blog_post(blog_post_link['href']) for blog_post_link in tqdm(blog_post_links)]
+#     # They're sorted from newest to oldest
+#     # Reorder to be oldest to newest
+#     blog_posts = reversed(blog_posts)
+#     with blog_posts_cache_file.open('w') as f:
+#         json.dump(list(blog_posts), f)
+# else:
+#     with blog_posts_cache_file.open('r') as f:
+#         blog_posts = json.load(f)
 
 
 # -------------------------------------------------------------------------
