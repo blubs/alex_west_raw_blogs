@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 from tqdm.auto import tqdm
 from pathlib import Path
 
+from joblib import Parallel, delayed
+
 
 blog_page = requests.get('https://www.alexwest.co/blogs')
 blog_soup = BeautifulSoup(blog_page.content, 'html.parser')
@@ -29,10 +31,18 @@ def get_blog_post(blog_post_url):
     return blog_post
 
 
-# Only get first 10
-blog_post_links = blog_post_links[:10]
 
-blog_posts = [get_blog_post(blog_post_link['href']) for blog_post_link in tqdm(blog_post_links)]
+# Debug - Only get first 10
+# blog_post_links = blog_post_links[:10]
+
+
+# Serial
+# blog_posts = [get_blog_post(blog_post_link['href']) for blog_post_link in tqdm(blog_post_links)]
+
+# Parallel
+blog_posts = Parallel(n_jobs=-1)(delayed(get_blog_post)(blog_post_link['href'])  for blog_post_link in tqdm(blog_post_links))
+
+
 # They're sorted from newest to oldest
 # Reorder to be oldest to newest
 blog_posts = reversed(blog_posts)

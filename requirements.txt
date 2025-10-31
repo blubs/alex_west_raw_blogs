@@ -5,3 +5,4 @@ pypandoc_binary # Includes pandoc
 weasyprint
 # pypandoc
 # pandoc
+joblib
