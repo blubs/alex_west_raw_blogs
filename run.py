@@ -13,6 +13,9 @@ blog_post_links = blog_soup.find_all('a', href=re.compile(r'^/posts/\d+$'))
 build_dir = Path('build')
 build_dir.mkdir(parents=True, exist_ok=True)
 
+cache_dir = Path('cache')
+cache_dir.mkdir(parents=True, exist_ok=True)
+
 
 
 def get_blog_post(blog_post_url):
@@ -29,7 +32,7 @@ def get_blog_post(blog_post_url):
 
 
 
-blog_posts_cache_file = build_dir / 'blog_posts.json'
+blog_posts_cache_file = cache_dir / 'blog_posts.json'
 
 if not blog_posts_cache_file.exists():
     blog_posts = [get_blog_post(blog_post_link['href']) for blog_post_link in tqdm(blog_post_links)]
@@ -94,8 +97,5 @@ pypandoc.convert_file(
     outputfile=pdf_output_file,
     extra_args=['--pdf-engine=weasyprint'],
 )
-
-
-breakpoint()
 # -------------------------------------------------------------------------
 
