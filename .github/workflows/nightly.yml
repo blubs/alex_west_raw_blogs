@@ -24,7 +24,7 @@ jobs:
         
       - name: Download last hash
         run: |
-          gh release download latest --pattern "last_hash.txt" || echo "No previous" > last_hash.txt
+          gh release download latest --pattern "last_hash.txt" -O last_hash.txt || true
         env:
           GH_TOKEN: ${{ github.token }}
 
@@ -53,8 +53,9 @@ jobs:
       - name: Create Release
         if: steps.hash.outputs.changed == 'true'
         run: |
-          gh release create latest build/* --title "Latest Build" --notes "Auto nightly" --clobber || \
-          gh release upload latest build/* --clobber
+          TAG="nightly-$(date +%Y%m%d-%H%M)"
+          gh release create "$TAG" build/* last_hash.txt \
+            --title "Nightly $TAG" --notes "Auto build"
         env:
           GH_TOKEN: ${{ github.token }}
 
