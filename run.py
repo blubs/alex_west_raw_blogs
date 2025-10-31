@@ -10,9 +10,6 @@ blog_page = requests.get('https://www.alexwest.co/blogs')
 blog_soup = BeautifulSoup(blog_page.content, 'html.parser')
 blog_post_links = blog_soup.find_all('a', href=re.compile(r'^/posts/\d+$'))
 
-# For now, blogs have truncated text
-# TODO - Need to request all blog entries
-
 
 def get_blog_post(blog_post_url):
     blog_post_page = requests.get(f'https://www.alexwest.co{blog_post_url}')
