@@ -44,23 +44,22 @@ jobs:
           source venv/bin/activate
           python run.py # Generates ./build/*
       
-      # - name: Save hash
-      #   if: steps.hash.outputs.changed == 'true'
-      #   run: |
-      #     cat last_hash.txt   # Output from "check_for_updates.py"
-      #     git config user.name "github-actions"
-      #     git config user.email "actions@github.com"
-      #     git add last_hash.txt
-      #     git commit -m "Update hash" || echo "No changes"
-      #     git push
-
       - name: Upload artifacts
         if: steps.hash.outputs.changed == 'true'
         uses: actions/upload-artifact@v4
         with:
           path: build/*
 
+      - name: Create Release
+        if: steps.hash.outputs.changed == 'true'
+        run: |
+          gh release create latest build/* --title "Latest Build" --notes "Auto nightly" --clobber || \
+          gh release upload latest build/* --clobber
+        env:
+          GH_TOKEN: ${{ github.token }}
+
       - name: Upload new hash
+        if: steps.hash.outputs.changed == 'true'
         run: |
           gh release upload latest last_hash.txt --clobber
         env:
