@@ -26,7 +26,11 @@ jobs:
         id: hash
         run: |
           source venv/bin/activate
-          python check_for_updates.py || echo "changed=true" >> $GITHUB_OUTPUT
+          if python check_for_updates.py; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
         
       - name: Build artifacts
         if: steps.hash.outputs.changed == 'true'
