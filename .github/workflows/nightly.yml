@@ -22,6 +22,12 @@ jobs:
           source venv/bin/activate
           pip install -r requirements.txt
         
+      - name: Download last hash
+        run: |
+          gh release download latest --pattern "last_hash.txt" || echo "No previous" > last_hash.txt
+        env:
+          GH_TOKEN: ${{ github.token }}
+
       - name: Check for changes
         id: hash
         run: |
@@ -47,9 +53,15 @@ jobs:
           git add last_hash.txt
           git commit -m "Update hash" || echo "No changes"
           git push
-        
+
       - name: Upload artifacts
         if: steps.hash.outputs.changed == 'true'
         uses: actions/upload-artifact@v4
         with:
           path: build/*
+
+      - name: Upload new hash
+        run: |
+          gh release upload latest last_hash.txt --clobber
+        env:
+          GH_TOKEN: ${{ github.token }}
