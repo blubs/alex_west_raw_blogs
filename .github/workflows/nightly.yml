@@ -26,7 +26,7 @@ jobs:
         
       - name: Download last hash
         run: |
-          gh release download latest --pattern "last_hash.txt" -O last_hash.txt || true
+          gh release download --pattern "last_hash.txt" || true
         env:
           GH_TOKEN: ${{ github.token }}
 
