@@ -21,6 +21,13 @@ blog_post_hrefs = [blog_post_link['href'] for blog_post_link in blog_post_links]
 blog_posts_checksum = hashlib.sha256(json.dumps(list(sorted(blog_post_hrefs))).encode()).hexdigest()
 
 
+print('---------------------------')
+print('Checking for blog post updates:')
+print('Prior hash:', last_hash)
+print('Cur hash:', blog_posts_checksum)
+print('---------------------------')
+
+
 # If hashes equivalent, skip
 if blog_posts_checksum == last_hash:
     print('No new blog posts')
