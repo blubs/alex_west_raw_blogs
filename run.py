@@ -22,8 +22,18 @@ cache_dir.mkdir(parents=True, exist_ok=True)
 def get_blog_post(blog_post_url):
     blog_post_page = requests.get(f'https://www.alexwest.co{blog_post_url}')
     blog_post_soup = BeautifulSoup(blog_post_page.content, 'html.parser')
-    blog_post_title = blog_post_soup.find('p').get_text()
-    blog_post_text = blog_post_soup.find('pre').get_text()
+
+    # Find title and text elements with None checks
+    title_element = blog_post_soup.find('p')
+    text_element = blog_post_soup.find('pre')
+
+    if title_element is None:
+        raise ValueError(f"Could not find title (<p> tag) in blog post: {blog_post_url}")
+    if text_element is None:
+        raise ValueError(f"Could not find text (<pre> tag) in blog post: {blog_post_url}")
+
+    blog_post_title = title_element.get_text()
+    blog_post_text = text_element.get_text()
     blog_post = {
         'title': blog_post_title,
         'text': blog_post_text,
